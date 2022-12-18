@@ -13,6 +13,7 @@
         <filename plugin="qljdownloads">qljdownloads.php</filename>
         <filename plugin="qljdownloads">index.html</filename>
         <filename plugin="qljdownloads">license.txt</filename>
+        <filename plugin="qljdownloads">README.md</filename>
         <folder plugin="qljdownloads">css</folder>
         <folder plugin="qljdownloads">tmpl</folder>
         <folder plugin="qljdownloads">js</folder>

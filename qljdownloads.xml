@@ -2,8 +2,8 @@
 <extension type="plugin" group="content" method="upgrade">
     <name>PLG_CONTENT_QLJDOWNLOADS</name>
     <author>Mareike Riegel</author>
-    <creationDate>September 2020</creationDate>
-    <copyright>Copyright (C) 2020 ql.de All rights reserved.</copyright>
+    <creationDate>September 2022</creationDate>
+    <copyright>Copyright (C) 2022 ql.de All rights reserved.</copyright>
     <authorEmail>mareike.riegel@ql.de</authorEmail>
     <authorUrl>http://ql.de/</authorUrl>
     <version>1.0.0</version>
@@ -45,6 +45,47 @@
                         label="PLG_CONTENT_QLJDOWNLOADS_TAG_LABEL"
                         description="PLG_CONTENT_QLJDOWNLOADS_TAG_DESC"
                  />
+                <field
+                        name="label_scheme"
+                        type="list"
+                        default="{title} ({id})"
+                        label="PLG_CONTENT_QLJDOWNLOADS_LABEL_LABEL"
+                        description="PLG_CONTENT_QLJDOWNLOADS_LABEL_DESC">
+                    <option value="{title}">PLG_CONTENT_QLJDOWNLOADS_LABEL1</option>
+                    <option value="{title} ({id})">PLG_CONTENT_QLJDOWNLOADS_LABEL2</option>
+                    <option value="{title} - {cat_title}">PLG_CONTENT_QLJDOWNLOADS_LABEL3</option>
+                    <option value="{title} ({id}) - {cat_title}">PLG_CONTENT_QLJDOWNLOADS_LABEL4</option>
+                    <option value="{title} ({id}) - {cat_title} ({cat_id})">PLG_CONTENT_QLJDOWNLOADS_LABEL5</option>
+                </field>
+                <field name="layout"
+                       default="default"
+                       label="PLG_CONTENT_QLJDOWNLOADS_LAYOUT_LABEL"
+                       description="PLG_CONTENT_QLJDOWNLOADS_LAYOUT_DESC"
+                />
+                <field
+                        name="spacer_column"
+                        type="spacer"
+                        label="PLG_CONTENT_QLJDOWNLOADS_COLUMN_LABEL"
+                        description="PLG_CONTENT_QLJDOWNLOADS_COLUMN_DESC" />
+                <field
+                        name="cat_column_show"
+                        type="radio"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                        label="PLG_CONTENT_QLJDOWNLOADS_CATEGORY_LABEL"
+                        description="PLG_CONTENT_QLJDOWNLOADS_CATEGORY_DESC">
+                    <option value="1">JSHOW</option>
+                    <option value="0">JHIDE</option>
+                </field>
+                <field
+                        name="cat_label_scheme"
+                        type="list"
+                        default="{cat_title} ({cat_id})"
+                        label="PLG_CONTENT_QLJDOWNLOADS_LABEL_LABEL"
+                        description="PLG_CONTENT_QLJDOWNLOADS_LABEL_DESC">
+                    <option value="{cat_title}">PLG_CONTENT_QLJDOWNLOADS_LABEL50</option>
+                    <option value="{cat_title} ({cat_id})">PLG_CONTENT_QLJDOWNLOADS_LABEL51</option>
+                </field>
             </fieldset>
         </fields>
     </config>

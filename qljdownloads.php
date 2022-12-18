@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        plg_content_qljdownloads
- * @copyright      Copyright (C) 2020 ql.de All rights reserved.
+ * @copyright      Copyright (C) 2022 ql.de All rights reserved.
  * @author         Mareike Riegel mareike.riegel@ql.de
  * @license        GNU General Public License version 2 or later; see LICENSE.txt
  */
@@ -26,6 +26,12 @@ class plgContentQljdownloads extends JPlugin
 
     const JDOWNLOADS_ROOT = 'ROOT';
     const JDOWNLOADS_FOLDERSEPARATOR = '/';
+
+    public function __construct(&$subject, $config)
+    {
+        parent::__construct($subject, $config);
+        $this->loadLanguage();
+    }
 
     /**
      * onContentPrepare :: some kind of controller of plugin
@@ -88,7 +94,7 @@ class plgContentQljdownloads extends JPlugin
             }
             $replace['data'] = $file;
             //get html code
-            $replace_string = $this->getHtml($numKey, $replace);
+            $replace_string = $this->getHtml($numKey, $replace, $pluginParams->get('layout', 'default'));
             $strText = str_replace($strContent, $replace_string, $strText);
         }
 
@@ -195,7 +201,7 @@ class plgContentQljdownloads extends JPlugin
      * @param $arrData
      * @return string
      */
-    private function getHtml($intCounter, $arrData): string
+    private function getHtml($intCounter, $arrData, $layoutPlugin): string
     {
         // initiating variables for output
         $objParams = $this->params;
@@ -205,8 +211,9 @@ class plgContentQljdownloads extends JPlugin
         $style = isset($style) ? $style : '';
         $type = isset($type) ? $type : '';
         $title = isset($title) ? $title : '';
-        $layout = isset($layout) ? $layout : '';
+        $layout = isset($layout) ? $layout : $layoutPlugin;
         $href = isset($href) ? $href : '';
+        $files = [$arrData['data'] ?? []];
 
         // load into buffer, and return
         ob_start();

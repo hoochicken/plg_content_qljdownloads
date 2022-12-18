@@ -12,7 +12,7 @@
     <files>
         <filename plugin="qljdownloads">qljdownloads.php</filename>
         <filename plugin="qljdownloads">index.html</filename>
-        <filename plugin="qljdownloads">license.txt</filename>
+        <filename plugin="qljdownloads">LICENSE.TXT</filename>
         <filename plugin="qljdownloads">README.md</filename>
         <folder plugin="qljdownloads">css</folder>
         <folder plugin="qljdownloads">tmpl</folder>
@@ -34,9 +34,15 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
+                <field
+                        name="jdownloads_root"
+                        default="/jdownloads"
+                        label="PLG_CONTENT_QLJDOWNLOADS_ROOTDIR_LABEL"
+                        description="PLG_CONTENT_QLJDOWNLOADS_ROOTDIR_DESC"
+                />
                  <field name="tag"
-                       default="qljdownloads"
-                       label="PLG_CONTENT_QLJDOWNLOADS_TAG_LABEL"
+                        default="qljdownloads"
+                        label="PLG_CONTENT_QLJDOWNLOADS_TAG_LABEL"
                         description="PLG_CONTENT_QLJDOWNLOADS_TAG_DESC"
                  />
             </fieldset>

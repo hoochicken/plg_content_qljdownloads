@@ -18,7 +18,7 @@ class plgContentQljdownloads extends JPlugin
     protected $tagStart = 'qljdownloads';
     protected $tagEnd = '}';
     protected $arrReplace = [];
-    protected $arrAttributesAvailable = ['file', 'class', 'id', 'style', 'type', 'title', 'layout',];
+    protected $arrAttributesAvailable = ['category', 'file', 'class', 'id', 'style', 'type', 'title', 'layout',];
     public $params;
     private $boolDebug = false;
     private array $category_path = [];
@@ -83,44 +83,37 @@ class plgContentQljdownloads extends JPlugin
             $replace = $this->getAttributes($this->arrAttributesAvailable, $attributes[$numKey]);
             $replace += $this->getAttributesDoubleEqual($this->arrAttributesAvailable, $attributes[$numKey]);
 
-            if (!isset($replace['file'])) continue;
-
-            $fileId = (int)$replace['file'];
-            $files = $this->getJdownloadsByFileId($fileId);
-            if (0 === count($files)) continue;
-            foreach ($files as $k => $file) {
-                $file = $this->enrichFile($file, $pluginParams, $jdownloads_root);
-                $files[$k] = $file;
+            if (isset($replace['file'])) {
+                $fileId = (int)$replace['file'];
+                $files = $this->getJdownloadsByFileId($fileId);
+                if (0 === count($files)) continue;
+                foreach ($files as $k => $file) {
+                    $file = $this->enrichFile($file, $pluginParams, $jdownloads_root);
+                    $files[$k] = $file;
+                }
+                $replace['data'] = $files;
+                //get html code
+                $replace_string = $this->getHtml($numKey, $replace, $pluginParams->get('layout', 'default'));
+                $strText = str_replace($strContent, $replace_string, $strText);
             }
-            $replace['data'] = $file;
-            //get html code
-            $replace_string = $this->getHtml($numKey, $replace, $pluginParams->get('layout', 'default'));
-            $strText = str_replace($strContent, $replace_string, $strText);
+
+            if (isset($replace['category'])) {
+                $categoryId = (int)$replace['category'];
+                $files = $this->getJdownloadsByCategory($categoryId);
+                if (0 === count($files)) continue;
+                foreach ($files as $k => $file) {
+                    $file = $this->enrichFile($file, $pluginParams, $jdownloads_root);
+                    $files[$k] = $file;
+                }
+                $replace['data'] = $files;
+                //get html code
+                $replace_string = $this->getHtml($numKey, $replace, $pluginParams->get('layout', 'default'));
+                $strText = str_replace($strContent, $replace_string, $strText);
+            }
         }
 
         //return text
         return $strText;
-    }
-
-    private function getCategoryPath(int $catId): array
-    {
-        if (0 === $catId || 1 === $catId) return $this->category_path;
-        $cat = $this->getJdownloadsCategories([$catId]);
-        if (0 === count($cat)) return $this->category_path;
-        $cat = array_pop($cat);
-        if (0 === $cat->id || 1 === $cat->id || self::JDOWNLOADS_ROOT === $cat->title) return $this->category_path;
-        $this->category_path[] = $cat;
-        return $this->getCategoryPath($cat->parent_id);
-    }
-
-    public function getJdHref(string $jdownloads_root, array $category_path, $file): string
-    {
-        $path = [];
-        foreach ($category_path as $cat) {
-            $path[] = $cat->cat_dir;
-        }
-        $cat_path = implode(self::JDOWNLOADS_FOLDERSEPARATOR, $path);
-        return sprintf('%s/%s/%s', $jdownloads_root, $cat_path, $file->url_download);
     }
 
     /**
@@ -164,12 +157,12 @@ class plgContentQljdownloads extends JPlugin
     {
         $strSelector = implode('|', $arrAttributesAvailable);
         preg_match_all('~(' . $strSelector . ')="(.+?)"~s', $string, $arrMatches);
+        if (!isset($arrMatches[0]) || !is_array($arrMatches[0]) || 0 === count($arrMatches[0])) return [];
+
         $arrAttributes = [];
-        if (is_array($arrMatches)) {
-            foreach ($arrMatches[0] as $k => $v) {
-                if (isset($arrMatches[1][$k]) && isset($arrMatches[2][$k])) {
-                    $arrAttributes[$arrMatches[1][$k]] = $arrMatches[2][$k];
-                }
+        foreach ($arrMatches[0] as $k => $v) {
+            if (isset($arrMatches[1][$k]) && isset($arrMatches[2][$k])) {
+                $arrAttributes[$arrMatches[1][$k]] = $arrMatches[2][$k];
             }
         }
         return $arrAttributes;
@@ -185,12 +178,11 @@ class plgContentQljdownloads extends JPlugin
     {
         $strSelector = implode('|', $arrAttributesAvailable);
         preg_match_all('~(' . $strSelector . ')==([0-9]+)~s', $string, $arrMatches);
+        if (!isset($arrMatches[0]) || !is_array($arrMatches[0]) || 0 === count($arrMatches[0])) return [];
         $arrAttributes = [];
-        if (is_array($arrMatches)) {
-            foreach ($arrMatches[0] as $k => $v) {
-                if (isset($arrMatches[1][$k]) && isset($arrMatches[2][$k])) {
-                    $arrAttributes[$arrMatches[1][$k]] = $arrMatches[2][$k];
-                }
+        foreach ($arrMatches[0] as $k => $v) {
+            if (isset($arrMatches[1][$k]) && isset($arrMatches[2][$k])) {
+                $arrAttributes[$arrMatches[1][$k]] = $arrMatches[2][$k];
             }
         }
         return $arrAttributes;
@@ -330,6 +322,7 @@ class plgContentQljdownloads extends JPlugin
 
     private function enrichFile($file, $params, $jdownloads_root = '/jdownloads')
     {
+        $this->category_path = [];
         $file->category_path = $this->getCategoryPath($file->cat_id);
         krsort($file->category_path);
         $category_path = $file->category_path;
@@ -356,5 +349,26 @@ class plgContentQljdownloads extends JPlugin
         });
         $value = (array)$file;
         return str_replace($placeholder, $value, $labelScheme);
+    }
+
+    private function getCategoryPath(int $catId): array
+    {
+        if (0 === $catId || 1 === $catId) return $this->category_path;
+        $cat = $this->getJdownloadsCategories([$catId]);
+        if (0 === count($cat)) return $this->category_path;
+        $cat = array_pop($cat);
+        if (0 === $cat->id || 1 === $cat->id || self::JDOWNLOADS_ROOT === $cat->title) return $this->category_path;
+        $this->category_path[] = $cat;
+        return $this->getCategoryPath($cat->parent_id);
+    }
+
+    public function getJdHref(string $jdownloads_root, array $category_path, $file): string
+    {
+        $path = [];
+        foreach ($category_path as $cat) {
+            $path[] = $cat->cat_dir;
+        }
+        $cat_path = implode(self::JDOWNLOADS_FOLDERSEPARATOR, $path);
+        return sprintf('%s/%s/%s', $jdownloads_root, $cat_path, $file->url_download);
     }
 }

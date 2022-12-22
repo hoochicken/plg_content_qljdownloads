@@ -29,8 +29,8 @@ $files = $arrData['data'];
                 <?php echo $file->id; ?>
                 <span class="title"><?php echo $file->link; ?>,
                 <?php if ((bool)$objParams->get('cat_column_show', 1)): ?>
-                    <?php echo $file->cat_label; ?>
-                <?php endif; ?>,
+                    <?php echo $file->cat_label; ?>,
+                <?php endif; ?>
                 <?php echo $file->created; ?>
             </li>
         <?php endforeach; ?>
